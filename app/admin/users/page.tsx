@@ -2,26 +2,16 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { prisma } from "@/lib/db";
+import { getAllUsers } from "@/lib/users";
 import { UsersPanel } from "@/components/admin/users-panel";
 
 export default async function AdminUsersPage() {
   const session = await auth();
-  if (!session?.user || (session.user as any).role !== "admin") {
+  if (!session?.user || (session.user as { role?: string }).role !== "admin") {
     redirect("/login?error=unauthorized");
   }
 
-  const users = await prisma.user.findMany({
-    orderBy: { createdAt: "desc" },
-    select: {
-      id:        true,
-      name:      true,
-      email:     true,
-      role:      true,
-      active:    true,
-      createdAt: true,
-    },
-  });
+  const users = getAllUsers();
 
   return (
     <div className="flex-1 p-6 pb-20">

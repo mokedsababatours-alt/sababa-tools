@@ -8,9 +8,9 @@ export default async function HomePage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  const userRole = (session.user as any).role;
+  const userRole = (session.user as { role?: string }).role;
   const portalType: "team" | "admin" = userRole === "admin" ? "admin" : "team";
-  const tools = await getToolsForPortal(portalType);
+  const tools = getToolsForPortal(portalType);
 
   return (
     <div className="flex-1 flex flex-col items-center">

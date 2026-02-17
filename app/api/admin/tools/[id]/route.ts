@@ -1,6 +1,6 @@
 // app/api/admin/tools/[id]/route.ts
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { updateTool } from "@/lib/tools";
 import { NextRequest, NextResponse } from "next/server";
 
 // PATCH /api/admin/tools/[id] - update tool (active or full settings)
@@ -9,15 +9,25 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
-  if (!session?.user || (session.user as any).role !== "admin") {
+  if (!session?.user || (session.user as { role?: string }).role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { id } = await params;
   const body = await req.json();
 
-  // Partial update: only include provided fields (slug never changed to keep links stable)
-  const data: Record<string, unknown> = {};
+  const data: Partial<{
+    labelHe: string;
+    labelEn: string;
+    icon: string;
+    type: string;
+    url: string;
+    webhookEnv: string;
+    color: string;
+    portal: string;
+    order: number;
+    active: boolean;
+  }> = {};
   if (typeof body.active === "boolean") data.active = body.active;
   if (typeof body.labelHe === "string" && body.labelHe.trim()) data.labelHe = body.labelHe.trim();
   if (typeof body.labelEn === "string" && body.labelEn.trim()) data.labelEn = body.labelEn.trim();
@@ -29,15 +39,25 @@ export async function PATCH(
   if (["both", "team", "admin"].includes(body.portal)) data.portal = body.portal;
   if (typeof body.order === "number") data.order = body.order;
 
-  const tool = await prisma.tool.update({
-    where: { id },
-    data,
-    select: {
-      id: true, slug: true, labelHe: true, labelEn: true, icon: true,
-      type: true, url: true, webhookEnv: true, color: true, portal: true,
-      active: true, order: true,
+  const tool = updateTool(id, data);
+  if (!tool) {
+    return NextResponse.json({ error: "Tool not found" }, { status: 404 });
+  }
+
+  return NextResponse.json({
+    tool: {
+      id: tool.id,
+      slug: tool.slug,
+      labelHe: tool.labelHe,
+      labelEn: tool.labelEn,
+      icon: tool.icon,
+      type: tool.type,
+      url: tool.url,
+      webhookEnv: tool.webhookEnv,
+      color: tool.color,
+      portal: tool.portal,
+      active: tool.active,
+      order: tool.order,
     },
   });
-
-  return NextResponse.json({ tool });
 }

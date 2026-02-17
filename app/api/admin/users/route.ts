@@ -1,13 +1,12 @@
 // app/api/admin/users/route.ts
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { findUserByEmail, createUser } from "@/lib/users";
 import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 
 // Guard: admin only
 async function requireAdmin() {
   const session = await auth();
-  if (!session?.user || (session.user as any).role !== "admin") {
+  if (!session?.user || (session.user as { role?: string }).role !== "admin") {
     return null;
   }
   return session;
@@ -25,25 +24,29 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "שדות חסרים" }, { status: 400 });
   }
 
-  const exists = await prisma.user.findUnique({ where: { email } });
+  const exists = findUserByEmail(email);
   if (exists) {
     return NextResponse.json({ error: "אימייל כבר קיים במערכת" }, { status: 409 });
   }
 
-  const hashed = await bcrypt.hash(password, 12);
-
-  const user = await prisma.user.create({
-    data: {
-      name,
-      email,
-      password: hashed,
-      role: role === "admin" ? "admin" : "user",
-    },
-    select: {
-      id: true, name: true, email: true,
-      role: true, active: true, createdAt: true,
-    },
+  const user = await createUser({
+    name,
+    email,
+    password,
+    role: role === "admin" ? "admin" : "user",
   });
 
-  return NextResponse.json({ user }, { status: 201 });
+  return NextResponse.json(
+    {
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        active: user.active,
+        createdAt: user.createdAt,
+      },
+    },
+    { status: 201 }
+  );
 }

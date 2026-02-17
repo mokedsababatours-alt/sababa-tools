@@ -2,32 +2,16 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { prisma } from "@/lib/db";
+import { getAllTools } from "@/lib/tools";
 import { ToolsPanel } from "@/components/admin/tools-panel";
 
 export default async function AdminToolsPage() {
   const session = await auth();
-  if (!session?.user || (session.user as any).role !== "admin") {
+  if (!session?.user || (session.user as { role?: string }).role !== "admin") {
     redirect("/login?error=unauthorized");
   }
 
-  const tools = await prisma.tool.findMany({
-    orderBy: { order: "asc" },
-    select: {
-      id: true,
-      slug: true,
-      labelHe: true,
-      labelEn: true,
-      icon: true,
-      type: true,
-      url: true,
-      webhookEnv: true,
-      color: true,
-      portal: true,
-      active: true,
-      order: true,
-    },
-  });
+  const tools = getAllTools();
 
   return (
     <div className="flex-1 p-6 pb-20">

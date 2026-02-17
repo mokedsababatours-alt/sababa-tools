@@ -30,8 +30,6 @@ npm-debug.log*
 *.db-journal
 *.db-shm
 *.db-wal
-prisma/*.db
-
 # Vercel
 .vercel
 
