@@ -10,7 +10,6 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 RUN npm ci --ignore-scripts
-RUN npm install prisma@5.22.0 @prisma/client@5.22.0 --save-exact
 
 # ── Builder ───────────────────────────────────────────────────────────────────
 FROM base AS builder
@@ -45,7 +44,8 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy prisma for migrations at startup
+# Copy prisma config and schema for migrations at startup
+COPY --from=builder /app/prisma.config.ts ./
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
@@ -61,4 +61,4 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 # Run migrations then start
-CMD ["sh", "-c", "npx prisma db push && node server.js"]
+CMD ["sh", "-c", "./node_modules/.bin/prisma db push && node server.js"]

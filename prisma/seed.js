@@ -1,10 +1,13 @@
 // prisma/seed.js
 // Run once: npm run db:seed
 
-const { PrismaClient } = require("@prisma/client");
-const bcrypt = require("bcryptjs");
+const { PrismaClient } = require('@prisma/client')
+const { PrismaBetterSqlite3 } = require('@prisma/adapter-better-sqlite3')
+const bcrypt = require('bcryptjs')
 
-const prisma = new PrismaClient();
+const url = process.env.DATABASE_URL ?? 'file:./prisma/portal.db'
+const adapter = new PrismaBetterSqlite3({ url })
+const prisma = new PrismaClient({ adapter })
 
 async function main() {
   console.log("🌱 Seeding database...");
