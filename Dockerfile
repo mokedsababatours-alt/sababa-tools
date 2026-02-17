@@ -9,7 +9,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-RUN npm ci
+RUN npm ci --ignore-scripts
+RUN npm install prisma@5.22.0 @prisma/client@5.22.0 --save-exact
 
 # ── Builder ───────────────────────────────────────────────────────────────────
 FROM base AS builder
