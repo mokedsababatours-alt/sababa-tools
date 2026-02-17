@@ -6,14 +6,15 @@ import { getWebhookUrl } from "@/lib/tools";
 import { EmbedTool } from "@/components/embed-tool";
 import { ChatTool } from "@/components/chat-tool";
 
-type Props = { params: { slug: string } };
+type Props = { params: Promise<{ slug: string }> };
 
 export default async function ToolPage({ params }: Props) {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
+  const { slug } = await params;
   const tool = await prisma.tool.findUnique({
-    where: { slug: params.slug, active: true },
+    where: { slug, active: true },
   });
 
   if (!tool) notFound();

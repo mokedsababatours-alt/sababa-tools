@@ -6,14 +6,14 @@ import { NextRequest, NextResponse } from "next/server";
 // PATCH /api/admin/tools/[id] - update tool (active or full settings)
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
   if (!session?.user || (session.user as any).role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id } = params;
+  const { id } = await params;
   const body = await req.json();
 
   // Partial update: only include provided fields (slug never changed to keep links stable)
