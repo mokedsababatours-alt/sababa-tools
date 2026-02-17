@@ -3,7 +3,7 @@ FROM node:20-alpine AS base
 
 # ── Dependencies ──────────────────────────────────────────────────────────────
 FROM base AS deps
-RUN apk add --no-cache libc6-compat openssl
+RUN apk add --no-cache libc6-compat openssl openssl-dev
 WORKDIR /app
 
 COPY package*.json ./
@@ -17,6 +17,9 @@ WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# Ensure public directory exists (Next.js expects it; COPY fails if missing)
+RUN mkdir -p public
 
 # Generate Prisma client
 RUN npx prisma generate
