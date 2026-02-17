@@ -1,0 +1,139 @@
+/* ── Google Fonts import ─────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@300;400;500;600;700&display=swap');
+
+/* app/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* ── CSS Variables ───────────────────────────────────────────────────────── */
+:root {
+  /* Light theme - warm cream */
+  --bg-base:        #fdfaf5;
+  --bg-surface:     #f9f3e8;
+  --bg-tile:        #ffffff;
+  --bg-tile-hover:  #fffef9;
+  --border:         #e8d9b8;
+  --border-subtle:  #f2e8d0;
+  --text-primary:   #2c1f0e;
+  --text-secondary: #6b4f2a;
+  --text-muted:     #9c7a52;
+  --accent-gold:    #c9973a;
+  --accent-teal:    #2d8a7e;
+  --accent-coral:   #c9503a;
+  --shadow-tile:    0 4px 24px -4px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+  --shadow-hover:   0 8px 40px -8px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.dark {
+  /* Dark theme - soft navy */
+  --bg-base:        #0c1528;
+  --bg-surface:     #101c38;
+  --bg-tile:        #152548;
+  --bg-tile-hover:  #1a2f5e;
+  --border:         #2d4a8a;
+  --border-subtle:  #1a2f5e;
+  --text-primary:   #e8ecf4;
+  --text-secondary: #a0b4d4;
+  --text-muted:     #6a88b4;
+  --accent-gold:    #e0b048;
+  --accent-teal:    #4abcae;
+  --accent-coral:   #e06848;
+  --shadow-tile:    0 4px 24px -4px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.2);
+  --shadow-hover:   0 8px 40px -8px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* ── Base styles ─────────────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-hebrew), 'Noto Sans Hebrew', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-surface); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ── Tile card (glossy, soft edges) ──────────────────────────────────────── */
+.portal-tile {
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, white 8%, var(--bg-tile)),
+    color-mix(in srgb, black 4%, var(--bg-tile))
+  );
+  border:        1px solid var(--border-subtle);
+  box-shadow:
+    var(--shadow-tile),
+    inset 0 1px 0 color-mix(in srgb, white 20%, transparent);
+  transition:    all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.portal-tile:hover {
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, white 12%, var(--bg-tile-hover)),
+    color-mix(in srgb, black 3%, var(--bg-tile-hover))
+  );
+  box-shadow:
+    var(--shadow-hover),
+    inset 0 1px 0 color-mix(in srgb, white 25%, transparent);
+  border-color:  var(--border);
+  transform:     translateY(-3px);
+}
+
+.portal-tile:active {
+  transform:     translateY(-1px);
+  box-shadow: var(--shadow-tile);
+}
+
+/* ── Chat bubbles ─────────────────────────────────────────────────────────── */
+.chat-bubble-user {
+  background:    var(--accent-gold);
+  color:         #ffffff;
+  border-radius: 1.25rem 0.25rem 1.25rem 1.25rem;
+}
+
+.chat-bubble-ai {
+  background:    var(--bg-surface);
+  border:        1px solid var(--border-subtle);
+  color:         var(--text-primary);
+  border-radius: 0.25rem 1.25rem 1.25rem 1.25rem;
+}
+
+/* ── Auth page background ─────────────────────────────────────────────────── */
+.auth-bg {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(201,151,58,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(45,138,126,0.06) 0%, transparent 50%),
+    var(--bg-base);
+}
+
+.dark .auth-bg {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(224,176,72,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(74,188,174,0.05) 0%, transparent 50%),
+    var(--bg-base);
+}
+
+/* ── Staggered tile animations ────────────────────────────────────────────── */
+.tile-grid .portal-tile:nth-child(1)  { animation-delay: 0.05s; }
+.tile-grid .portal-tile:nth-child(2)  { animation-delay: 0.10s; }
+.tile-grid .portal-tile:nth-child(3)  { animation-delay: 0.15s; }
+.tile-grid .portal-tile:nth-child(4)  { animation-delay: 0.20s; }
+.tile-grid .portal-tile:nth-child(5)  { animation-delay: 0.25s; }
+.tile-grid .portal-tile:nth-child(6)  { animation-delay: 0.30s; }
+.tile-grid .portal-tile:nth-child(7)  { animation-delay: 0.35s; }
+.tile-grid .portal-tile:nth-child(8)  { animation-delay: 0.40s; }
