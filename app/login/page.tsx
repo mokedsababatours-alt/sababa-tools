@@ -46,7 +46,7 @@ export default function LoginPage() {
           w-full max-w-sm mx-auto
           bg-[var(--bg-tile)]
             border border-[var(--border)]
-            rounded-3xl
+            rounded-2xl
             p-8
             shadow-[var(--shadow-hover)]
           "
@@ -63,7 +63,7 @@ export default function LoginPage() {
         {error && (
           <div
             className="
-              mb-5 px-4 py-3 rounded-xl
+              mb-5 px-4 py-3 rounded-lg
               bg-[color-mix(in_srgb,var(--accent-coral)_10%,transparent)]
               border border-[color-mix(in_srgb,var(--accent-coral)_30%,transparent)]
               text-[var(--accent-coral)] text-sm text-center
@@ -86,7 +86,7 @@ export default function LoginPage() {
               required
               autoComplete="email"
               className="
-                w-full px-4 py-2.5 rounded-xl
+                w-full px-4 py-2.5 rounded-lg
                 bg-[var(--bg-surface)]
                 border border-[var(--border)]
                 text-[var(--text-primary)]
@@ -110,7 +110,7 @@ export default function LoginPage() {
               required
               autoComplete="current-password"
               className="
-                w-full px-4 py-2.5 rounded-xl
+                w-full px-4 py-2.5 rounded-lg
                 bg-[var(--bg-surface)]
                 border border-[var(--border)]
                 text-[var(--text-primary)]
@@ -127,9 +127,10 @@ export default function LoginPage() {
             type="submit"
             disabled={loading}
             className="
-              mt-2 w-full py-3 rounded-xl
-              bg-[var(--accent-gold)] text-white
-              font-semibold text-sm
+              mt-2 w-full py-3 rounded-lg
+              bg-[color-mix(in_srgb,var(--accent-gold)_85%,transparent)]
+              backdrop-blur-sm border border-white/25
+              text-white font-semibold text-sm
               hover:opacity-90 active:opacity-80
               disabled:opacity-50 disabled:cursor-not-allowed
               transition-all duration-200

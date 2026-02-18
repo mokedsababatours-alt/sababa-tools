@@ -1,7 +1,7 @@
 // app/tool/[slug]/page.tsx
 import { auth } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
-import { getToolBySlug, getWebhookUrl } from "@/lib/tools";
+import { getToolBySlug } from "@/lib/tools";
 import { EmbedTool } from "@/components/embed-tool";
 import { ChatTool } from "@/components/chat-tool";
 
@@ -20,17 +20,25 @@ export default async function ToolPage({ params }: Props) {
     redirect("/?error=forbidden");
   }
 
-  const webhookUrl = tool.type === "chat" ? getWebhookUrl(tool.webhookEnv) : "";
-
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
+
+      {/* ── Tool title & description ───────────────────────────────────────── */}
+      <div className="flex-shrink-0 px-6 py-3 border-b border-[var(--border-subtle)]">
+        <h2 className="text-lg font-semibold text-[var(--text-primary)] leading-tight">
+          {tool.labelHe}
+        </h2>
+        {tool.description && (
+          <p className="text-sm text-[var(--text-muted)] mt-0.5">{tool.description}</p>
+        )}
+      </div>
+
       <div className="flex-1 overflow-hidden flex flex-col">
         {tool.type === "embed" && <EmbedTool url={tool.url} label={tool.labelHe} />}
         {tool.type === "chat" && (
           <ChatTool
             toolSlug={tool.slug}
             labelHe={tool.labelHe}
-            webhookUrl={webhookUrl}
           />
         )}
       </div>

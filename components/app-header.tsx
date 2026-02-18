@@ -14,7 +14,7 @@ export function AppHeader({ session }: Props) {
   const isToolPage = pathname?.startsWith("/tool/");
 
   return (
-    <header className="flex items-center justify-between px-6 py-3 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+    <header className="sticky top-0 z-30 flex items-center justify-between px-6 py-3 border-b border-white/20 dark:border-white/10 bg-white/80 dark:bg-[rgba(12,21,40,0.80)] backdrop-blur-md">
       {/* Right side - Logo & optional back */}
       <div className="flex items-center gap-4">
         {isToolPage && (
@@ -46,14 +46,14 @@ export function AppHeader({ session }: Props) {
             {(session.user as { role?: string }).role === "admin" && (
               <Link
                 href="/admin"
-                className="text-xs px-3 py-1.5 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--accent-gold)] hover:border-[var(--accent-gold)] transition-colors duration-200"
+                className="text-xs px-3 py-1.5 rounded-md border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--accent-gold)] hover:border-[var(--accent-gold)] transition-colors duration-200"
               >
                 ניהול
               </Link>
             )}
             <button
               onClick={() => signOut({ callbackUrl: "/login" })}
-              className="text-xs px-3 py-1.5 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--accent-coral)] hover:border-[var(--accent-coral)] transition-colors duration-200"
+              className="text-xs px-3 py-1.5 rounded-md border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--accent-coral)] hover:border-[var(--accent-coral)] transition-colors duration-200"
             >
               יציאה
             </button>

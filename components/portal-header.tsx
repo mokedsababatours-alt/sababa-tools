@@ -40,7 +40,7 @@ export function PortalHeader({ userName, portalType, userRole }: Props) {
         {userRole === "admin" && (
           <a
             href="/admin"
-            className="text-xs px-3 py-1.5 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--accent-gold)] hover:border-[var(--accent-gold)] transition-colors duration-200"
+            className="text-xs px-3 py-1.5 rounded-md border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--accent-gold)] hover:border-[var(--accent-gold)] transition-colors duration-200"
           >
             ניהול
           </a>
@@ -48,7 +48,7 @@ export function PortalHeader({ userName, portalType, userRole }: Props) {
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
           className="
-            text-xs px-3 py-1.5 rounded-lg
+            text-xs px-3 py-1.5 rounded-md
             border border-[var(--border)]
             text-[var(--text-muted)]
             hover:text-[var(--accent-coral)] hover:border-[var(--accent-coral)]

@@ -12,7 +12,9 @@ type User = {
   createdAt: string | Date;
 };
 
-const inputClass = "w-full px-4 py-2.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent-gold)] transition-colors duration-200 text-sm";
+const inputClass = "w-full px-4 py-2.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent-gold)] transition-colors duration-200 text-sm";
+
+const labelClass = "block text-xs font-medium text-[var(--text-muted)] mb-1";
 
 export function UsersPanel({ initialUsers }: { initialUsers: User[] }) {
   const [users,    setUsers]    = useState<User[]>(initialUsers);
@@ -65,7 +67,7 @@ export function UsersPanel({ initialUsers }: { initialUsers: User[] }) {
   return (
     <div className="space-y-6">
       {/* ── Add user form ──────────────────────────────────────────────── */}
-      <div className="bg-[var(--bg-tile)] border border-[var(--border)] rounded-2xl p-6">
+      <div className="bg-[var(--bg-tile)] border border-[var(--border)] rounded-xl p-6">
         <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
           ➕ הוסף משתמש חדש
         </h2>
@@ -74,28 +76,61 @@ export function UsersPanel({ initialUsers }: { initialUsers: User[] }) {
         {success && <p className="text-sm text-[var(--accent-teal)] mb-3">{success}</p>}
 
         <form onSubmit={addUser} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <input
-            type="text" value={name} onChange={(e) => setName(e.target.value)}
-            required placeholder="שם מלא" className={inputClass}
-          />
-          <input
-            type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-            required placeholder="אימייל" className={inputClass}
-          />
-          <input
-            type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-            required minLength={8} placeholder="סיסמה (8 תווים לפחות)" className={inputClass}
-          />
-          <select value={role} onChange={(e) => setRole(e.target.value)} className={inputClass}>
-            <option value="user">משתמש רגיל</option>
-            <option value="admin">מנהל</option>
-          </select>
+          <div>
+            <label htmlFor="add-user-name" className={labelClass}>שם מלא</label>
+            <input
+              id="add-user-name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label htmlFor="add-user-email" className={labelClass}>אימייל</label>
+            <input
+              id="add-user-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label htmlFor="add-user-password" className={labelClass}>סיסמה (8 תווים לפחות)</label>
+            <input
+              id="add-user-password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={8}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label htmlFor="add-user-role" className={labelClass}>תפקיד</label>
+            <select
+              id="add-user-role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className={inputClass}
+            >
+              <option value="user">משתמש רגיל</option>
+              <option value="admin">מנהל</option>
+            </select>
+          </div>
 
           <button
-            type="submit" disabled={loading}
+            type="submit"
+            disabled={loading}
             className="
-              sm:col-span-2 py-2.5 rounded-xl
-              bg-[var(--accent-gold)] text-white font-semibold text-sm
+              sm:col-span-2 py-2.5 rounded-lg
+              bg-[color-mix(in_srgb,var(--accent-gold)_85%,transparent)]
+              backdrop-blur-sm border border-white/20
+              text-white font-semibold text-sm
               hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed
               transition-all duration-200
             "
@@ -106,7 +141,7 @@ export function UsersPanel({ initialUsers }: { initialUsers: User[] }) {
       </div>
 
       {/* ── Users list ─────────────────────────────────────────────────── */}
-      <div className="bg-[var(--bg-tile)] border border-[var(--border)] rounded-2xl overflow-hidden">
+      <div className="bg-[var(--bg-tile)] border border-[var(--border)] rounded-xl overflow-hidden">
         <div className="px-6 py-4 border-b border-[var(--border-subtle)]">
           <h2 className="text-lg font-semibold text-[var(--text-primary)]">
             משתמשים ({users.length})
@@ -131,7 +166,7 @@ export function UsersPanel({ initialUsers }: { initialUsers: User[] }) {
               <button
                 onClick={() => toggleUser(user.id, user.active)}
                 className={`
-                  text-xs px-3 py-1.5 rounded-lg border transition-colors duration-200
+                  text-xs px-3 py-1.5 rounded-md border transition-colors duration-200
                   ${user.active
                     ? "border-[var(--accent-coral)] text-[var(--accent-coral)] hover:bg-[color-mix(in_srgb,var(--accent-coral)_10%,transparent)]"
                     : "border-[var(--accent-teal)] text-[var(--accent-teal)] hover:bg-[color-mix(in_srgb,var(--accent-teal)_10%,transparent)]"

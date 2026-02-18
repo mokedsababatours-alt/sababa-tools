@@ -31,7 +31,7 @@ export function ToolTile({ tool }: { tool: Tool }) {
         group
         flex flex-col items-center justify-center
         gap-4 p-8
-        rounded-3xl
+        rounded-2xl
         cursor-pointer
         text-center
         no-underline
@@ -45,17 +45,29 @@ export function ToolTile({ tool }: { tool: Tool }) {
       }}
     >
       {/* Icon - bigger ratio */}
-      <span
-        className="
-          text-5xl sm:text-6xl leading-none
-          transition-transform duration-300
-          group-hover:scale-110
-        "
-        role="img"
-        aria-label={tool.labelEn}
-      >
-        {tool.icon}
-      </span>
+      {tool.icon?.startsWith("/") || tool.icon?.startsWith("http") ? (
+        <img
+          src={tool.icon}
+          alt={tool.labelEn}
+          className="
+            w-14 h-14 sm:w-16 sm:h-16 object-contain
+            transition-transform duration-300
+            group-hover:scale-110
+          "
+        />
+      ) : (
+        <span
+          className="
+            text-5xl sm:text-6xl leading-none
+            transition-transform duration-300
+            group-hover:scale-110
+          "
+          role="img"
+          aria-label={tool.labelEn}
+        >
+          {tool.icon}
+        </span>
+      )}
 
       {/* Hebrew label */}
       <span

@@ -13,7 +13,7 @@ export default async function HomePage() {
   const tools = getToolsForPortal(portalType);
 
   return (
-    <div className="flex-1 flex flex-col items-center">
+    <div className="flex-1 flex flex-col items-center justify-center">
       <div className="w-full max-w-5xl mx-auto px-6 py-8">
         <div className="mb-8">
           <h2 className="text-xl font-bold text-[var(--text-primary)]">

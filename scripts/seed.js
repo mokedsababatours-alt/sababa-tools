@@ -6,12 +6,38 @@ const bcrypt = require("bcryptjs");
 const path = require("path");
 const fs = require("fs");
 
+// Load .env so seed uses same DATABASE_URL and ADMIN_* as the app
+try {
+  const envPath = path.join(process.cwd(), ".env");
+  const envContent = fs.readFileSync(envPath, "utf8");
+  for (const line of envContent.split("\n")) {
+    const match = line.match(/^([^#=]+)=(.*)$/);
+    if (match) {
+      const key = match[1].trim();
+      const value = match[2].trim().replace(/^["']|["']$/g, "");
+      if (!process.env[key]) process.env[key] = value;
+    }
+  }
+} catch (e) {
+  // .env may not exist; continue with defaults
+}
+
 function getDbPath() {
   const raw = process.env.DATABASE_URL ?? "./data/portal.db";
   if (raw.startsWith("file:")) {
-    return raw.slice(5).trim();
+    try {
+      return new URL(raw).pathname;
+    } catch {
+      const stripped = raw.slice(5).trim();
+      return path.isAbsolute(stripped) ? stripped : stripped;
+    }
   }
   return raw;
+}
+
+function resolveDbPath() {
+  const dbPath = getDbPath();
+  return path.isAbsolute(dbPath) ? dbPath : path.resolve(process.cwd(), dbPath);
 }
 
 function ensureDir(filePath) {
@@ -29,7 +55,7 @@ function generateId() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 11)}`;
 }
 
-const filePath = path.resolve(process.cwd(), getDbPath());
+const filePath = resolveDbPath();
 ensureDir(filePath);
 const db = new Database(filePath);
 

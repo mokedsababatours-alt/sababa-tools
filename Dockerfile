@@ -42,7 +42,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/node_modules ./node_modules
 COPY scripts/docker-entrypoint.sh /entrypoint.sh
 
-RUN mkdir -p /app/data && chown nextjs:nodejs /app/data && \
+RUN mkdir -p /app/data /app/public/uploads/icons && \
+    chown nextjs:nodejs /app/data && \
+    chown -R nextjs:nodejs /app/public/uploads && \
     chmod +x /entrypoint.sh
 
 EXPOSE 3000

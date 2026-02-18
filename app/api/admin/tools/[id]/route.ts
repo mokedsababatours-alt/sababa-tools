@@ -1,6 +1,6 @@
 // app/api/admin/tools/[id]/route.ts
 import { auth } from "@/lib/auth";
-import { updateTool } from "@/lib/tools";
+import { deleteTool, updateTool } from "@/lib/tools";
 import { NextRequest, NextResponse } from "next/server";
 
 // PATCH /api/admin/tools/[id] - update tool (active or full settings)
@@ -60,4 +60,24 @@ export async function PATCH(
       order: tool.order,
     },
   });
+}
+
+// DELETE /api/admin/tools/[id] - permanently remove a tool
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth();
+  if (!session?.user || (session.user as { role?: string }).role !== "admin") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { id } = await params;
+  const result = deleteTool(id);
+
+  if (result.changes === 0) {
+    return NextResponse.json({ error: "Tool not found" }, { status: 404 });
+  }
+
+  return new NextResponse(null, { status: 204 });
 }

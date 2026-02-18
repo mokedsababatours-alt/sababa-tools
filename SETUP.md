@@ -20,7 +20,7 @@ You need:
 
 ## Step 2: Set Up the Project Locally
 
-1. Open **Cursor** and open the `travel-portal` folder
+1. Open **Cursor** and open the `sababa-tools` folder
 2. Open the terminal inside Cursor (View → Terminal)
 3. Run:
    ```bash
@@ -38,11 +38,12 @@ You need:
      ```
    - Set your admin email, name, and a strong password
 
-6. Set up the database:
+6. Seed the database:
    ```bash
-   npm run db:push
    npm run db:seed
    ```
+   The database file and all tables are created automatically when the server starts.
+   The seed script creates your admin user and default tools.
    You should see: `✅ Admin user created` and tool entries
 
 7. Start the development server:
@@ -108,7 +109,7 @@ In the application settings → Environment Variables, add:
 Without this, your users and data will be wiped every deployment.
 
 In the application settings → **Persistent Storage / Volumes**:
-- Host path: `/data/travel-portal` (Coolify creates this)
+- Host path: `/data/sababa-tools` (Coolify creates this)
 - Container path: `/app/data`
 
 ### Deploy!
@@ -116,7 +117,7 @@ In the application settings → **Persistent Storage / Volumes**:
 Click **Deploy**. Watch the build logs.
 
 On first deploy, the app automatically:
-1. Runs database migrations
+1. Creates the SQLite database and all tables (no migration command needed)
 2. Is ready to accept your seed data
 
 Then run the seed **once** via Coolify's terminal or SSH:
@@ -151,22 +152,17 @@ And in n8n's settings, under "Security" → allow iframe embedding from your dom
    ```
    N8N_WEBHOOK_MY_TOOL="https://your-n8n.yourdomain.com/webhook/my-tool"
    ```
-2. Add the env var in Coolify too
-3. In Cursor terminal (or Coolify terminal):
-   ```bash
-   # Connect to database and add a tool row
-   npm run db:studio
-   ```
-   This opens a visual database editor at http://localhost:5555
-   Add a row to the `Tool` table with:
+2. Add the env var in Coolify too (env vars require a redeploy to take effect)
+3. Log into the portal as admin → open the Admin panel → click "➕ הוסף כלי חדש"
+4. Fill in the form:
    - `type`: `chat`
    - `webhookEnv`: `N8N_WEBHOOK_MY_TOOL`
    - `portal`: `both` or `admin`
 
 ### To add a new link/embed tool:
-Same as above but:
+Same as above via the Admin panel add form, but:
 - `type`: `link` or `embed`
-- `url`: the full URL of the service
+- `url`: the full URL of the service (no env var or redeploy needed)
 
 ---
 

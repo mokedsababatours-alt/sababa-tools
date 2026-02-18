@@ -55,62 +55,82 @@ html {
 
 body {
   background-color: var(--bg-base);
+  background-image:
+    radial-gradient(ellipse at 10% 20%, rgba(201,151,58,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 80%, rgba(45,138,126,0.05) 0%, transparent 45%);
   color: var(--text-primary);
   font-family: var(--font-hebrew), 'Noto Sans Hebrew', sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
   min-height: 100vh;
 }
 
+.dark body {
+  background-image:
+    radial-gradient(ellipse at 10% 20%, rgba(224,176,72,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 80%, rgba(74,188,174,0.03) 0%, transparent 45%);
+}
+
 /* ── Scrollbar ────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar       { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-surface); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 1.5px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-/* ── Tile card (glossy, soft edges) ──────────────────────────────────────── */
+/* ── Tile card (glass / frosted) ─────────────────────────────────────────── */
 .portal-tile {
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, white 8%, var(--bg-tile)),
-    color-mix(in srgb, black 4%, var(--bg-tile))
-  );
-  border:        1px solid var(--border-subtle);
+  background:           rgba(255,255,255,0.72);
+  backdrop-filter:      blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border:               1px solid rgba(255,255,255,0.22);
   box-shadow:
     var(--shadow-tile),
-    inset 0 1px 0 color-mix(in srgb, white 20%, transparent);
-  transition:    all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    inset 0 1px 0 rgba(255,255,255,0.35);
+  transition:           all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .portal-tile {
+  background:           rgba(21,37,72,0.72);
+  border-color:         rgba(255,255,255,0.08);
 }
 
 .portal-tile:hover {
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, white 12%, var(--bg-tile-hover)),
-    color-mix(in srgb, black 3%, var(--bg-tile-hover))
-  );
+  background:           rgba(255,255,255,0.88);
   box-shadow:
     var(--shadow-hover),
-    inset 0 1px 0 color-mix(in srgb, white 25%, transparent);
-  border-color:  var(--border);
-  transform:     translateY(-3px);
+    inset 0 1px 0 rgba(255,255,255,0.45);
+  border-color:         rgba(255,255,255,0.40);
+  transform:            translateY(-3px);
+}
+
+.dark .portal-tile:hover {
+  background:           rgba(26,47,94,0.82);
+  border-color:         rgba(255,255,255,0.14);
 }
 
 .portal-tile:active {
-  transform:     translateY(-1px);
-  box-shadow: var(--shadow-tile);
+  transform:   translateY(-1px);
+  box-shadow:  var(--shadow-tile);
+}
+
+/* Graceful degradation – solid fallback when backdrop-filter is unsupported */
+@supports not (backdrop-filter: blur(1px)) {
+  .portal-tile       { background: var(--bg-tile); }
+  .portal-tile:hover { background: var(--bg-tile-hover); }
+  .dark .portal-tile { background: var(--bg-tile); }
 }
 
 /* ── Chat bubbles ─────────────────────────────────────────────────────────── */
 .chat-bubble-user {
   background:    var(--accent-gold);
   color:         #ffffff;
-  border-radius: 1.25rem 0.25rem 1.25rem 1.25rem;
+  border-radius: 0.625rem 0.125rem 0.625rem 0.625rem;
 }
 
 .chat-bubble-ai {
   background:    var(--bg-surface);
   border:        1px solid var(--border-subtle);
   color:         var(--text-primary);
-  border-radius: 0.25rem 1.25rem 1.25rem 1.25rem;
+  border-radius: 0.125rem 0.625rem 0.625rem 0.625rem;
 }
 
 /* ── Auth page background ─────────────────────────────────────────────────── */

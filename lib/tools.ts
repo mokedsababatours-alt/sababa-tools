@@ -101,6 +101,11 @@ export function setToolActive(id: string, active: boolean): Tool | null {
   return findToolById(id);
 }
 
+export function deleteTool(id: string): { changes: number } {
+  const result = db.prepare("DELETE FROM Tool WHERE id = ?").run(id);
+  return { changes: result.changes };
+}
+
 export function updateTool(
   id: string,
   data: Partial<{

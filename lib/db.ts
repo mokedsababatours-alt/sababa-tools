@@ -72,7 +72,26 @@ function getDb(): Database.Database {
       active INTEGER NOT NULL DEFAULT 1,
       createdAt TEXT NOT NULL DEFAULT (datetime('now'))
     );
+    CREATE TABLE IF NOT EXISTS ChatSession (
+      id        TEXT PRIMARY KEY,
+      toolId    TEXT NOT NULL,
+      title     TEXT,
+      createdAt TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS ChatMessage (
+      id        TEXT PRIMARY KEY,
+      sessionId TEXT NOT NULL,
+      role      TEXT NOT NULL,
+      content   TEXT NOT NULL,
+      createdAt TEXT NOT NULL
+    );
   `);
+
+  try {
+    db.prepare("ALTER TABLE ChatSession ADD COLUMN title TEXT").run();
+  } catch {
+    // column already exists — ignore
+  }
 
   globalForDb.db = db;
   return db;

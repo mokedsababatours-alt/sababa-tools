@@ -1,5 +1,6 @@
 // app/api/chat/route.ts
 import { auth } from "@/lib/auth";
+import { addMessage, createSession, updateSessionTitle } from "@/lib/chat";
 import { getToolBySlug, getWebhookUrl } from "@/lib/tools";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -10,7 +11,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { message, toolSlug } = body;
+  const { message, toolSlug, sessionId: incomingSessionId } = body;
 
   if (!message || typeof message !== "string") {
     return NextResponse.json({ error: "חסרה הודעה" }, { status: 400 });
@@ -30,6 +31,13 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
+
+  const sessionId: string =
+    typeof incomingSessionId === "string" && incomingSessionId.trim()
+      ? incomingSessionId.trim()
+      : createSession(tool.id).id;
+
+  addMessage(sessionId, "user", message);
 
   try {
     const n8nRes = await fetch(webhookUrl, {
@@ -53,7 +61,13 @@ export async function POST(req: NextRequest) {
         ? data
         : data.reply ?? data.text ?? data.output ?? data.message ?? JSON.stringify(data);
 
-    return NextResponse.json({ reply });
+    addMessage(sessionId, "ai", reply);
+
+    if (typeof data.sessionTitle === "string" && data.sessionTitle.trim()) {
+      updateSessionTitle(sessionId, data.sessionTitle.trim());
+    }
+
+    return NextResponse.json({ reply, sessionId });
   } catch (err) {
     console.error("[chat/route]", err);
     return NextResponse.json(

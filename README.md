@@ -9,7 +9,7 @@ A self-hosted internal tools portal for the travel agency team.
 One URL, one login, all tools in one place.
 
 **Live URL:** `tools.yourdomain.com`  
-**Stack:** Next.js 14 · NextAuth v5 · Prisma · SQLite · Tailwind CSS  
+**Stack:** Next.js 16 · NextAuth v5 · better-sqlite3 · SQLite · Tailwind CSS  
 **Hosted on:** Coolify (VPS) · Traefik reverse proxy · Docker container
 
 ---
@@ -73,10 +73,13 @@ n8n processes (calls AI, does logic, etc.)
 Returns { reply: "..." }
        ↓
 Portal displays response in chat bubble UI
+       ↓
+Message + reply saved to SQLite (ChatSession / ChatMessage tables)
 ```
 
 The webhook URL never touches the browser — it stays server-side.  
-n8n can return `{ reply }`, `{ text }`, `{ output }`, or `{ message }` — all handled.
+n8n can return `{ reply }`, `{ text }`, `{ output }`, or `{ message }` — all handled.  
+Every message is persisted. Chat history survives page refresh and is organised by session.
 
 ---
 
@@ -101,7 +104,7 @@ Tool `portal` field options:
 ## Project File Structure
 
 ```
-travel-portal/
+sababa-tools/
 │
 ├── app/                          Next.js App Router pages
 │   ├── page.tsx                  Main portal dashboard (tile grid)
@@ -109,28 +112,36 @@ travel-portal/
 │   ├── tool/[slug]/page.tsx      Individual tool page (embed or chat)
 │   ├── admin/users/page.tsx      User management page
 │   └── api/
-│       ├── auth/[...nextauth]/   NextAuth endpoint (do not touch)
-│       ├── chat/route.ts         Proxies chat messages to n8n
-│       └── admin/users/          Add user / toggle active endpoints
+│       ├── auth/[...nextauth]/        NextAuth endpoint (do not touch)
+│       ├── chat/route.ts              Proxies chat messages to n8n + persists history
+│       ├── chat/sessions/route.ts     List / create chat sessions
+│       ├── chat/sessions/[id]/
+│       │   └── messages/route.ts      Fetch messages for a session
+│       └── admin/
+│           ├── tools/[id]/route.ts    Update / delete a tool (admin only)
+│           ├── tools/reorder/route.ts Bulk reorder tools (admin only)
+│           └── users/                 Add user / toggle active endpoints
 │
 ├── components/
-│   ├── tool-tile.tsx             The big square button
-│   ├── portal-grid.tsx           The grid layout of tiles
-│   ├── portal-header.tsx         Top bar (title + logout)
-│   ├── chat-tool.tsx             WhatsApp-style chat UI
-│   ├── embed-tool.tsx            iframe wrapper
-│   ├── theme-toggle.tsx          Light/dark toggle (fixed bottom)
-│   ├── theme-provider.tsx        Theme context + localStorage
-│   └── admin/users-panel.tsx     Add/toggle users UI
+│   ├── tool-tile.tsx                  The big square button
+│   ├── portal-grid.tsx                The grid layout of tiles
+│   ├── portal-header.tsx              Top bar (title + logout)
+│   ├── chat-tool.tsx                  Chat UI with session sidebar + history
+│   ├── embed-tool.tsx                 iframe wrapper
+│   ├── theme-toggle.tsx               Light/dark toggle (fixed bottom)
+│   ├── theme-provider.tsx             Theme context + localStorage
+│   └── admin/
+│       ├── tools-panel.tsx            Tool management (add/edit/delete/reorder)
+│       └── users-panel.tsx            Add/toggle users UI
 │
 ├── lib/
-│   ├── auth.ts                   NextAuth config + login logic
-│   ├── db.ts                     Prisma client (singleton)
-│   └── tools.ts                  Tool fetching helpers
+│   ├── auth.ts                        NextAuth config + login logic
+│   ├── db.ts                          better-sqlite3 database (singleton, auto-creates tables)
+│   ├── chat.ts                        Chat session + message CRUD helpers
+│   └── tools.ts                       Tool fetching helpers
 │
-├── prisma/
-│   ├── schema.prisma             Database schema (User, Tool, Session)
-│   └── seed.js                   First-time setup: admin user + default tools
+├── scripts/
+│   └── seed.js                        First-time setup: admin user + default tools
 │
 ├── middleware.ts                 Auth guard — redirects if not logged in
 ├── next.config.js                Next.js config (standalone build, headers)
@@ -144,7 +155,7 @@ travel-portal/
 
 ## Database (SQLite)
 
-Two main tables:
+Managed by **better-sqlite3** via `lib/db.ts`. Tables are created automatically on first server start — no migration step required.
 
 **`User`**
 | Field | Notes |
@@ -161,23 +172,34 @@ Two main tables:
 |-------|-------|
 | slug | URL-safe ID e.g. `marketing-assistant` |
 | labelHe | Hebrew label shown on tile |
+| labelEn | English label |
 | icon | Emoji |
 | type | `link` / `embed` / `chat` |
 | url | For link/embed tools |
 | webhookEnv | Env var name for chat tools e.g. `N8N_WEBHOOK_MARKETING` |
 | color | Tile accent: `gold` / `teal` / `coral` / `default` |
 | portal | `both` / `team` / `admin` |
-| order | Sort order on grid (lower = first) |
+| sortOrder | Display order on grid (drag-and-drop in admin panel) |
 | active | `false` = hidden from portal |
+
+**`ChatSession`**
+| Field | Notes |
+|-------|-------|
+| id | Auto-generated |
+| toolId | Which chat tool this session belongs to |
+| createdAt | ISO timestamp |
+
+**`ChatMessage`**
+| Field | Notes |
+|-------|-------|
+| id | Auto-generated |
+| sessionId | Parent session |
+| role | `"user"` or `"ai"` |
+| content | Message text |
+| createdAt | ISO timestamp |
 
 **Database location in production:** `/app/data/portal.db`  
 This lives in the Coolify persistent volume. Never delete the volume.
-
-**To browse/edit the database visually:**
-```bash
-npm run db:studio
-# Opens at http://localhost:5555
-```
 
 ---
 
@@ -187,7 +209,7 @@ Set these in Coolify's environment panel (never in code):
 
 | Variable | Purpose |
 |----------|---------|
-| `DATABASE_URL` | `file:/app/data/portal.db` in production |
+| `DATABASE_URL` | `file:/app/data/portal.db` in production (or omit — defaults to `./data/portal.db`) |
 | `NEXTAUTH_URL` | Must match your exact domain with https:// |
 | `AUTH_SECRET` | Long random string — sessions break without this |
 | `ADMIN_EMAIL` | Used by seed script for first admin user |
@@ -204,16 +226,16 @@ Set these in Coolify's environment panel (never in code):
    ```
    N8N_WEBHOOK_MY_TOOL="https://automation.yourdomain.com/webhook/my-tool"
    ```
-2. Open database studio: `npm run db:studio`
-3. Add a row to `Tool` table:
+2. Log in as admin → go to the Admin panel → click "➕ הוסף כלי חדש" to expand the add form.
+3. Fill in the fields:
    - `type`: `chat`
    - `webhookEnv`: `N8N_WEBHOOK_MY_TOOL`
    - `portal`: `both` or `admin`
 4. Redeploy (or just restart — env vars require redeploy)
 
 ### New embed tool (iframe another service):
-1. Open database studio
-2. Add a row to `Tool` table:
+1. Admin panel → "➕ הוסף כלי חדש"
+2. Fill in:
    - `type`: `embed`
    - `url`: internal URL e.g. `http://localhost:5678`
 3. No redeploy needed — takes effect immediately
@@ -250,20 +272,20 @@ Accent colors used for tile borders and highlights:
 - Domain: `tools.yourdomain.com`
 
 **Persistent volume (CRITICAL):**
-- Host: `/data/travel-portal`
+- Host: `/data/sababa-tools`
 - Container: `/app/data`
 
 Without the volume, the database is wiped on every redeploy.
 
 **On first deploy:**
-The container auto-runs `prisma db push` (creates tables).  
-Then run the seed once via Coolify terminal:
+The database and all tables are created automatically when the container starts.  
+Then run the seed **once** via Coolify terminal:
 ```bash
-DATABASE_URL=file:/app/data/portal.db node prisma/seed.js
+DATABASE_URL=file:/app/data/portal.db node scripts/seed.js
 ```
 
 **Every subsequent deploy:**
-Tables are migrated automatically. Data is preserved via the volume.
+Tables are created with `IF NOT EXISTS` — existing data is always preserved via the volume.
 
 ---
 
@@ -296,13 +318,16 @@ Go to `tools.yourdomain.com/admin/users` → fill in name, email, password → A
 Same page → click "השבת" next to their name. They're blocked immediately.
 
 **Hide a tool temporarily:**
-Database studio → set `active = false` on the tool row.
+Admin panel → use the enable/disable toggle on the tool row.
 
-**Change tile order:**
-Database studio → update the `order` field (lower number = appears first).
+**Delete a tool permanently:**
+Admin panel → click "מחק" on the tool row → confirm the Hebrew dialog.
 
-**Change a tile's Hebrew label or icon:**
-Database studio → edit `labelHe` or `icon` on the tool row.
+**Reorder tiles:**
+Admin panel → drag the ⠿ handle on any tool row to a new position. Order is saved immediately.
+
+**Change a tile's Hebrew label, icon, or other fields:**
+Admin panel → expand the tool's accordion row → edit inline → save.
 
 ---
 
@@ -311,15 +336,36 @@ Database studio → edit `labelHe` or `icon` on the tool row.
 ```bash
 npm install              # install dependencies
 cp .env.example .env     # copy and fill in your values
-npm run db:push          # create database tables
-npm run db:seed          # create admin user + default tools
+npm run db:seed          # create admin user + default tools (DB is auto-created on first run)
 npm run dev              # start at http://localhost:3000
 ```
 
-To view/edit the database:
-```bash
-npm run db:studio        # opens at http://localhost:5555
-```
+The SQLite database and all tables are created automatically when the server starts for the first time — no separate migration step needed.
+
+---
+
+## Admin Tool Management
+
+The admin panel (`/admin`) includes a full tool management interface:
+
+- **Add tool** — click "➕ הוסף כלי חדש" to expand the form (collapsed by default). All fields have Hebrew labels above the inputs.
+- **Edit tool** — expand any tool's accordion row to edit its fields inline and save.
+- **Delete tool** — click "מחק" on any row. A Hebrew confirmation dialog appears; confirm to permanently remove the tool and all its data.
+- **Reorder tools** — drag any row by its ⠿ handle. New order is persisted to the database immediately via the reorder API.
+- **Enable / disable** — toggle the active state per tool without deleting it.
+
+---
+
+## Chat History
+
+Chat tools now persist all conversations:
+
+- **Sessions** — each conversation is a session tied to a tool. Sessions are global (not per-user).
+- **Session sidebar** — appears on the right side of the chat window (RTL-aware). Lists all previous sessions for the current tool with timestamps.
+- **New session** — click "＋ שיחה חדשה" in the sidebar to start a fresh conversation. Previous sessions remain accessible.
+- **History on load** — when you open a chat tool, the most recent session is automatically selected and its messages are loaded.
+- **Real-time updates** — sending a message updates the UI immediately via React state. No page reload required.
+- **Storage** — `ChatSession` and `ChatMessage` tables in the same SQLite file as everything else.
 
 ---
 

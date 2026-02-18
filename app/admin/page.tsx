@@ -26,7 +26,7 @@ export default async function AdminDashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Users Management Card */}
           <Link href="/admin/users" className="group">
-            <div className="bg-[var(--bg-tile)] border border-[var(--border)] rounded-2xl p-6 h-full transition-all duration-200 group-hover:border-[var(--accent-gold)] group-hover:shadow-lg">
+            <div className="bg-[var(--bg-tile)] border border-[var(--border)] rounded-xl p-6 h-full transition-all duration-200 group-hover:border-[var(--accent-gold)] group-hover:shadow-lg">
               <div className="flex items-center gap-4 mb-4">
                 <div className="text-3xl">
                   👥
@@ -51,7 +51,7 @@ export default async function AdminDashboardPage() {
 
           {/* Tools Management Card */}
           <Link href="/admin/tools" className="group">
-            <div className="bg-[var(--bg-tile)] border border-[var(--border)] rounded-2xl p-6 h-full transition-all duration-200 group-hover:border-[var(--accent-teal)] group-hover:shadow-lg">
+            <div className="bg-[var(--bg-tile)] border border-[var(--border)] rounded-xl p-6 h-full transition-all duration-200 group-hover:border-[var(--accent-teal)] group-hover:shadow-lg">
               <div className="flex items-center gap-4 mb-4">
                 <div className="text-3xl">
                   🧰
