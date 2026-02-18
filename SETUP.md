@@ -76,6 +76,7 @@ You need:
 3. Select your GitHub repo
 4. Build pack: **Dockerfile** (Coolify should auto-detect)
 5. Set the **port** to `3000`
+6. (Optional) In **Health Check** settings, set path to `/api/health` — the Dockerfile includes a built-in health check, but you can override via Coolify’s UI if needed
 
 ### Add your domains
 
@@ -121,7 +122,7 @@ On first deploy, the app automatically:
 Then run the seed **once** via Coolify's terminal or SSH:
 ```bash
 # In the container terminal (Coolify has a terminal tab)
-DATABASE_URL=file:/app/data/portal.db node prisma/seed.js
+DATABASE_URL=file:/app/data/portal.db node scripts/seed.js
 ```
 
 ---
