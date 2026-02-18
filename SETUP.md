@@ -92,7 +92,7 @@ In the application settings → Environment Variables, add:
 
 | Variable | Value |
 |---|---|
-| `DATABASE_URL` | `file:/app/data/portal.db` |
+| `DATABASE_URL` | `file:/app/data/portal.db` (absolute path; both `file:/path` and `file:///path` work) |
 | `NEXTAUTH_URL` | `https://tools.yourdomain.com` |
 | `AUTH_SECRET` | (your generated random string) |
 | `PORTAL_DOMAIN` | `tools.yourdomain.com` |

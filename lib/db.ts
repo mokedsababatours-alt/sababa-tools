@@ -5,9 +5,24 @@ import path from "path";
 function getDbPath(): string {
   const raw = process.env.DATABASE_URL ?? "./data/portal.db";
   if (raw.startsWith("file:")) {
-    return raw.slice(5).trim();
+    try {
+      const parsed = new URL(raw);
+      return parsed.pathname;
+    } catch {
+      const stripped = raw.slice(5).trim();
+      if (path.isAbsolute(stripped)) return stripped;
+      return stripped;
+    }
   }
   return raw;
+}
+
+function resolveDbPath(): string {
+  const dbPath = getDbPath();
+  if (path.isAbsolute(dbPath)) {
+    return dbPath;
+  }
+  return path.resolve(process.cwd(), dbPath);
 }
 
 function ensureDir(filePath: string): void {
@@ -25,7 +40,7 @@ const globalForDb = globalThis as unknown as { db: Database.Database };
 
 function getDb(): Database.Database {
   if (globalForDb.db) return globalForDb.db;
-  const filePath = path.resolve(process.cwd(), getDbPath());
+  const filePath = resolveDbPath();
   ensureDir(filePath);
   const db = new Database(filePath);
   db.pragma("journal_mode = WAL");

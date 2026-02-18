@@ -7,7 +7,8 @@ export const proxy = auth((req) => {
 
   const isPublicPath =
     nextUrl.pathname.startsWith("/login") ||
-    nextUrl.pathname.startsWith("/api/auth");
+    nextUrl.pathname.startsWith("/api/auth") ||
+    nextUrl.pathname.startsWith("/api/health");
 
   if (isPublicPath) return NextResponse.next();
 
@@ -21,5 +22,5 @@ export const proxy = auth((req) => {
 });
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|icons).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|icons|api/health).*)"],
 };
