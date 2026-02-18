@@ -17,6 +17,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+RUN npm rebuild better-sqlite3
+
+# Ensure public directory exists (Next.js expects it; COPY fails if missing)    
 RUN mkdir -p public
 
 RUN npm run build
