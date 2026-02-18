@@ -1,4 +1,6 @@
 // app/api/admin/tools/icon-upload/route.ts
+export const runtime = "nodejs";
+
 import { auth } from "@/lib/auth";
 import { generateId } from "@/lib/db";
 import fs from "fs";
@@ -9,6 +11,7 @@ const ALLOWED_TYPES: Record<string, string> = {
   "image/png": "png",
   "image/jpeg": "jpg",
   "image/webp": "webp",
+  "image/svg+xml": "svg",
 };
 
 const MAX_BYTES = 200 * 1024; // 200 KB
