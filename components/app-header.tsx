@@ -30,7 +30,7 @@ export function AppHeader({ session }: Props) {
             Sababa Tools
           </h1>
           <span className="text-xs text-[var(--text-muted)] hidden sm:inline">
-            כלי פורטל
+            פורטל כלים פנימי
           </span>
         </Link>
       </div>

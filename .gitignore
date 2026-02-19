@@ -39,3 +39,6 @@ next-env.d.ts
 
 *.apm
 *.cursor
+
+# Uploaded assets (runtime, not in git)
+public/uploads/
