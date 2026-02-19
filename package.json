@@ -14,6 +14,7 @@
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^12.6.2",
     "clsx": "^2.1.1",
+    "lodash": "^4.17.23",
     "markdown-to-txt": "^2.0.1",
     "next": "16.1.6",
     "next-auth": "^5.0.0-beta.20",
