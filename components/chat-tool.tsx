@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import markdownToTxt from "markdown-to-txt";
 
 type Message = {
   id:      string;
@@ -54,8 +55,20 @@ export function ChatTool({ toolSlug, labelHe }: Props) {
   const [sessionId,       setSessionId]       = useState<string | null>(null);
   const [sessions,        setSessions]        = useState<ChatSession[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(true);
+  const [copiedId,        setCopiedId]        = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef  = useRef<HTMLTextAreaElement>(null);
+
+  async function copyMessage(content: string, id: string) {
+    try {
+      const plainText = markdownToTxt(content);
+      await navigator.clipboard.writeText(plainText);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch {
+      setError("לא ניתן להעתיק");
+    }
+  }
 
   // Scroll to bottom on new message
   useEffect(() => {
@@ -326,15 +339,34 @@ export function ChatTool({ toolSlug, labelHe }: Props) {
                   {msg.role === "user" ? "אני" : "🤖"}
                 </div>
 
-                {/* Bubble + time */}
+                {/* Bubble + time (+ copy for AI) */}
                 <div className={`flex flex-col gap-1 max-w-[75%] ${msg.role === "user" ? "items-end" : "items-start"}`}>
-                  <div
-                    className={`
-                      px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap
-                      ${msg.role === "user" ? "chat-bubble-user" : "chat-bubble-ai"}
-                    `}
-                  >
-                    {msg.content}
+                  <div className="flex items-start gap-2 group/bubble">
+                    <div
+                      className={`
+                        px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap
+                        ${msg.role === "user" ? "chat-bubble-user" : "chat-bubble-ai"}
+                      `}
+                    >
+                      {msg.content}
+                    </div>
+                    {msg.role === "ai" && (
+                      <button
+                        type="button"
+                        onClick={() => copyMessage(msg.content, msg.id)}
+                        title={copiedId === msg.id ? "הועתק!" : "העתק"}
+                        className="
+                          flex-shrink-0 p-1.5 rounded-lg
+                          text-[var(--text-muted)] hover:text-[var(--text-primary)]
+                          hover:bg-[var(--bg-tile)]
+                          opacity-60 group-hover/bubble:opacity-100
+                          transition-opacity duration-150
+                        "
+                        aria-label="העתק הודעה"
+                      >
+                        {copiedId === msg.id ? "✓" : "📋"}
+                      </button>
+                    )}
                   </div>
                   <span className="text-[10px] text-[var(--text-muted)] px-1">
                     {msg.time}

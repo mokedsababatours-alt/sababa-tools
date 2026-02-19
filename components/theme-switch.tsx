@@ -22,15 +22,14 @@ export function ThemeSwitch() {
 
   return (
     <div className="flex items-center gap-1.5">
-      {/* Sun left, Moon right (RTL: first=right, last=left) */}
-      <span className="flex items-center justify-center w-5 h-5 text-[var(--text-muted)]" aria-hidden>
+      <span className="w-5 h-5 flex items-center justify-center text-[var(--text-muted)]" aria-hidden>
         <MoonIcon />
       </span>
       <button
         onClick={toggle}
         aria-label={isDark ? "עבור למצב בהיר" : "עבור למצב כהה"}
         className="
-          relative flex items-center
+          relative flex items-center justify-center
           w-12 h-6 rounded-full
           bg-[var(--bg-tile)] border border-[var(--border)]
           transition-colors duration-200
@@ -38,7 +37,7 @@ export function ThemeSwitch() {
       >
         <span
           className={`
-            absolute top-0.5 h-5 w-5 rounded-full
+            absolute top-1/2 -translate-y-1/2 h-5 w-5 rounded-full
             bg-[var(--accent-gold)] shadow-sm
             transition-all duration-200 ease-out
             ${isDark ? "start-0.5" : "end-0.5"}
@@ -46,7 +45,7 @@ export function ThemeSwitch() {
           aria-hidden
         />
       </button>
-      <span className="flex items-center justify-center w-5 h-5 text-[var(--text-muted)]" aria-hidden>
+      <span className="w-5 h-5 flex items-center justify-center text-[var(--text-muted)]" aria-hidden>
         <SunIcon />
       </span>
     </div>
