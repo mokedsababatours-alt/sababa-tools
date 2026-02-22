@@ -32,7 +32,7 @@ export async function PATCH(
   if (typeof body.labelHe === "string" && body.labelHe.trim()) data.labelHe = body.labelHe.trim();
   if (typeof body.labelEn === "string" && body.labelEn.trim()) data.labelEn = body.labelEn.trim();
   if (typeof body.icon === "string") data.icon = body.icon;
-  if (["link", "embed", "chat"].includes(body.type)) data.type = body.type;
+  if (["link", "embed", "chat", "upload"].includes(body.type)) data.type = body.type;
   if (typeof body.url === "string") data.url = body.url;
   if (typeof body.webhookEnv === "string") data.webhookEnv = body.webhookEnv;
   if (["gold", "teal", "coral", "default"].includes(body.color)) data.color = body.color;

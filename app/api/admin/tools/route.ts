@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     labelHe,
     labelEn,
     icon: icon || "🔧",
-    type: ["link", "embed", "chat"].includes(type) ? type : "link",
+    type: ["link", "embed", "chat", "upload"].includes(type) ? type : "link",
     url: url || "",
     webhookEnv: webhookEnv || "",
     color: ["gold", "teal", "coral", "default"].includes(color) ? color : "default",
