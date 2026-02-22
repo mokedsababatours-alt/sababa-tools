@@ -4,6 +4,7 @@ import { redirect, notFound } from "next/navigation";
 import { getToolBySlug } from "@/lib/tools";
 import { EmbedTool } from "@/components/embed-tool";
 import { ChatTool } from "@/components/chat-tool";
+import { UploadTool } from "@/components/upload-tool";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -41,6 +42,7 @@ export default async function ToolPage({ params }: Props) {
             labelHe={tool.labelHe}
           />
         )}
+        {tool.type === "upload" && <UploadTool tool={tool} />}
       </div>
     </div>
   );

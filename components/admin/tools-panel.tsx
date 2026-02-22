@@ -436,31 +436,36 @@ function ToolAccordionRow({
                 <option value="link">קישור (link)</option>
                 <option value="embed">הטבעה (embed)</option>
                 <option value="chat">צ&#39;אט (chat)</option>
+                <option value="upload">העלאת קובץ (upload)</option>
               </select>
             </div>
-            <div>
-              <label htmlFor={`edit-tool-${tool.id}-url`} className={labelClass}>כתובת URL</label>
-              <input
-                id={`edit-tool-${tool.id}-url`}
-                type="text"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                className={inputClass}
-                onClick={(e) => e.stopPropagation()}
-              />
-            </div>
-            <div>
-              <label htmlFor={`edit-tool-${tool.id}-webhook-env`} className={labelClass}>משתנה Webhook</label>
-              <input
-                id={`edit-tool-${tool.id}-webhook-env`}
-                type="text"
-                value={webhookEnv}
-                onChange={(e) => setWebhookEnv(e.target.value)}
-                placeholder="שם משתנה סביבה (לכלי chat)"
-                className={inputClass}
-                onClick={(e) => e.stopPropagation()}
-              />
-            </div>
+            {type !== "upload" && (
+              <div>
+                <label htmlFor={`edit-tool-${tool.id}-url`} className={labelClass}>כתובת URL</label>
+                <input
+                  id={`edit-tool-${tool.id}-url`}
+                  type="text"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  className={inputClass}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+            )}
+            {(type === "chat" || type === "upload") && (
+              <div>
+                <label htmlFor={`edit-tool-${tool.id}-webhook-env`} className={labelClass}>משתנה Webhook</label>
+                <input
+                  id={`edit-tool-${tool.id}-webhook-env`}
+                  type="text"
+                  value={webhookEnv}
+                  onChange={(e) => setWebhookEnv(e.target.value)}
+                  placeholder="שם משתנה סביבה (לכלי chat / upload)"
+                  className={inputClass}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+            )}
             <div>
               <label htmlFor={`edit-tool-${tool.id}-color`} className={labelClass}>צבע</label>
               <select
@@ -726,29 +731,34 @@ export function ToolsPanel({ initialTools }: { initialTools: Tool[] }) {
                   <option value="link">קישור (link)</option>
                   <option value="embed">הטבעה (embed)</option>
                   <option value="chat">צ&#39;אט (chat)</option>
+                  <option value="upload">העלאת קובץ (upload)</option>
                 </select>
               </div>
-              <div>
-                <label htmlFor="add-tool-url" className={labelClass}>כתובת URL</label>
-                <input
-                  id="add-tool-url"
-                  type="text"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <label htmlFor="add-tool-webhook-env" className={labelClass}>משתנה Webhook</label>
-                <input
-                  id="add-tool-webhook-env"
-                  type="text"
-                  value={webhookEnv}
-                  onChange={(e) => setWebhookEnv(e.target.value)}
-                  placeholder="שם משתנה סביבה (לכלי chat)"
-                  className={inputClass}
-                />
-              </div>
+              {type !== "upload" && (
+                <div>
+                  <label htmlFor="add-tool-url" className={labelClass}>כתובת URL</label>
+                  <input
+                    id="add-tool-url"
+                    type="text"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
+              )}
+              {(type === "chat" || type === "upload") && (
+                <div>
+                  <label htmlFor="add-tool-webhook-env" className={labelClass}>משתנה Webhook</label>
+                  <input
+                    id="add-tool-webhook-env"
+                    type="text"
+                    value={webhookEnv}
+                    onChange={(e) => setWebhookEnv(e.target.value)}
+                    placeholder="שם משתנה סביבה (לכלי chat / upload)"
+                    className={inputClass}
+                  />
+                </div>
+              )}
               <div>
                 <label htmlFor="add-tool-color" className={labelClass}>צבע</label>
                 <select

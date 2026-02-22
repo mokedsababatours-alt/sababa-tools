@@ -80,7 +80,7 @@ export function createTool(data: {
     data.labelEn,
     data.icon ?? "",
     data.description ?? "",
-    ["link", "embed", "chat"].includes(data.type ?? "") ? data.type : "link",
+    ["link", "embed", "chat", "upload"].includes(data.type ?? "") ? data.type : "link",
     data.url ?? "",
     data.webhookEnv ?? "",
     ["gold", "teal", "coral", "default"].includes(data.color ?? "") ? data.color : "default",
@@ -139,7 +139,7 @@ export function updateTool(
     updates.push("icon = ?");
     values.push(data.icon);
   }
-  if (["link", "embed", "chat"].includes(data.type ?? "")) {
+  if (["link", "embed", "chat", "upload"].includes(data.type ?? "")) {
     updates.push("type = ?");
     values.push(data.type!);
   }
