@@ -8,7 +8,8 @@ export const proxy = auth((req) => {
   const isPublicPath =
     nextUrl.pathname.startsWith("/login") ||
     nextUrl.pathname.startsWith("/api/auth") ||
-    nextUrl.pathname.startsWith("/api/health");
+    nextUrl.pathname.startsWith("/api/health") ||
+    nextUrl.pathname.startsWith("/api/build-docx");
 
   if (isPublicPath) return NextResponse.next();
 
