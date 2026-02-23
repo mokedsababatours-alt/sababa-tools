@@ -85,12 +85,31 @@ function getDb(): Database.Database {
       content   TEXT NOT NULL,
       createdAt TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS DashboardConfig (
+      id      TEXT PRIMARY KEY DEFAULT 'default',
+      config  TEXT NOT NULL DEFAULT '{}'
+    );
   `);
 
   try {
     db.prepare("ALTER TABLE ChatSession ADD COLUMN title TEXT").run();
   } catch {
     // column already exists — ignore
+  }
+
+  // Seed default dashboard config if not present
+  const existing = db.prepare("SELECT id FROM DashboardConfig WHERE id = 'default'").get();
+  if (!existing) {
+    db.prepare("INSERT INTO DashboardConfig (id, config) VALUES ('default', ?)").run(
+      JSON.stringify({
+        cpu: true,
+        ram: true,
+        disk: true,
+        uptime: true,
+        load: true,
+        docker: true,
+      })
+    );
   }
 
   globalForDb.db = db;
