@@ -224,18 +224,15 @@ export function DashboardClient({ isAdmin }: { isAdmin: boolean }) {
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl font-bold">Server Dashboard</h1>
-          {lastUpdated && (
-            <p className="text-xs opacity-40 mt-0.5">
-              עודכן: {lastUpdated.toLocaleTimeString("he-IL")}
-            </p>
-          )}
-        </div>
-        <div className="flex gap-2">
+    <div className="flex-1 flex flex-col p-6 overflow-auto">
+      {/* Toolbar */}
+      <div className="flex items-center justify-between mb-4">
+        {lastUpdated && (
+          <p className="text-xs opacity-40">
+            עודכן: {lastUpdated.toLocaleTimeString("he-IL")}
+          </p>
+        )}
+        <div className="flex gap-2 mr-auto">
           <button
             onClick={fetchStats}
             className="text-sm px-3 py-1.5 rounded-lg border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition"
